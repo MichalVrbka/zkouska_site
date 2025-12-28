@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="cs">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sítě - praktická zkouška</title>
+    <style>
+        /* ===== ZÁKLAD ===== */
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #f4f6f8;
+            color: #1f2937;
+            line-height: 1.6;
+        }
+
+        section {
+            max-width: 1100px;
+            margin: 2rem auto;
+            background: #ffffff;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, .08);
+        }
+
+        img{
+            width: 100vw;
+            min-width: 200px;
+            max-width: 600px;
+            border-radius: 24px;
+            
+        }
+
+        h1,
+        h2,
+        h3 {
+            margin-top: 2rem;
+        }
+
+
+        .block {
+            padding: 1rem 1.2rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+        }
+
+
+        .cmd {
+            background: #0f172a;
+            color: #e5e7eb;
+            font-family: monospace;
+            padding: 1rem;
+            border-radius: 8px;
+            overflow-x: auto;
+            position: relative;
+        }
+
+        .cmd::before {
+            content: "💻";
+            display: block;
+            color: #38bdf8;
+            font-size: .85rem;
+            margin-bottom: .4rem;
+        }
+
+        .file {
+            background: #f1f5f9;
+            border-left: 5px solid #2563eb;
+            position: relative;
+        }
+
+        .file::before {
+            content: "📄";
+            font-weight: 600;
+            color: #2563eb;
+            display: block;
+            margin-bottom: .4rem;
+        }
+
+
+        .dir {
+            background: #f8fafc;
+            border-left: 5px solid #16a34a;
+            position: relative;
+        }
+
+        .dir::before {
+            content: "📁";
+            font-weight: 600;
+            color: #16a34a;
+            display: block;
+            margin-bottom: .4rem;
+        }
+
+
+        .service {
+            background: #ecfeff;
+            border-left: 5px solid #0891b2;
+        }
+
+        .service::before {
+            content: "⚙️";
+            font-weight: 600;
+            color: #0891b2;
+            display: block;
+            margin-bottom: .4rem;
+        }
+
+
+        .test {
+            background: #f0fdf4;
+            border-left: 5px solid #15803d;
+        }
+
+        .test::before {
+            content: "🧪";
+            font-weight: 600;
+            color: #15803d;
+            display: block;
+            margin-bottom: .4rem;
+        }
+
+
+        .warn {
+            background: #fff7ed;
+            border-left: 5px solid #ea580c;
+        }
+
+        .warn::before {
+            content: "⚠️";
+            font-weight: 600;
+            color: #ea580c;
+            display: block;
+            margin-bottom: .4rem;
+        }
+
+
+        .note {
+            background: #eff6ff;
+            border-left: 5px solid #2563eb;
+        }
+
+        .note::before {
+            content: "ℹ️";
+            font-weight: 600;
+            color: #2563eb;
+            display: block;
+            margin-bottom: .4rem;
+        }
+
+
+        .path {
+            font-family: monospace;
+            background: #e5e7eb;
+            padding: .15rem .4rem;
+            border-radius: 4px;
+        }
+
+
+        code {
+            background: #e5e7eb;
+            padding: .15rem .4rem;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+
+
+        @media (max-width: 768px) {
+            section {
+                padding: 1.2rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <h1>
+        Nastavení síťovek
+    </h1>
+
+    <img src="Obrázek1.png" alt="obr1">
+    <img src="Obrázek2.png" alt="obr2">
+    <div class="cmd">
+        <p>nmcli con add type ethernet con-name eth1 ifname eth1</p>
+        <p>nmcli con mod eth1 ipv4.addresses 10.0.0.1/8</p>
+        <p>nmcli con mod eth1 ipv4.method manual</p>
+        <p>nmcli con up eth1</p>
+        <p>ip a</p>
+    </div>
+    <div class="block note">U eth1 musí být inet 10.0.0.1/8</div>
+    <img src="Obrázek3.png" alt="obr3">
+    <div class="cmd">
+        <p>nmcli networking off</p>
+        <p>nmcli networking on</p>
+    </div>
+    <div class="block note">Restart sítě</div>
+
+    <h1>Nastavení routování</h1>
+    <div class="block file">/etc/sysctl.conf</div>
+    <div class="cmd">
+        <p>nano /etc/sysctl.conf</p>
+    </div>
+    <div class="block note">
+        <p>Přidat na konec souboru: net.ipv4.ip_forward = 1</p>
+    </div>
+    <div class="block note">Ctrl + X, Y, Enter (Pro uložení souboru)</div>
+    <img src="Obrázek4.png" alt="obr4">
+    <div class="cmd">
+        <p>sysctl -p</p>
+        <p>cat /proc/sys/net/ipv4/ip_forward</p>
+    </div>
+    <div class="block warn">
+        <p>terminál musí vypsat 1</p>
+    </div>
+    <h2>Nastavení firewallu</h2>
+    <div class="cmd">firewall-config</div>
+    <div class="block warn">Pravděpodobně nebude nainstalovaný, linux najde instalaci a je třeba ji potvrdit.</div>
+    <div class="cmd">
+        <p>systemctl start firewalld</p>
+        <p>firewall-config</p>
+    </div>
+    <img src="Obrázek5.png" alt="obr1">
+    <img src="Obrázek6.png" alt="obr1">
+    <img src="Obrázek7.png" alt="obr1">
+
+    <div class="block note">Měl by začít fungovat internet</div>
+
+    <h1>Instalace Midnight Commanderu</h1>
+    <div class="cmd">
+        dnf install mc -y
+    </div>
+
+    <h1>Nstavení SSH + změna portu na port 32</h1>
+    <div class="cmd">
+        <p>su</p>
+        <p>mc</p>
+    </div>
+    <div class="block file">
+        /etc/ssh/sshd_config
+    </div>
+    <div class="block note">
+        <p>#PORT 22 Změnit na PORT 32</p>
+    </div>
+    <div class="block warn">Nezapomenout odstranit #</div>
+    <div class="block note">
+        <p>Uložení souboru:</p>F10 -> Uložit (Yes) -> F10
+    </div>
+    <img src="Obrázek8.png" alt="obr8">
+    <div class="cmd">
+        <p>semanage port -a -t ssh_port_t -p tcp 32</p>
+        <p>firewall-cmd --zone=public --add-port=32/tcp --permanent</p>
+        <p>firewall-cmd --reload</p>
+        <p>systemctl restart sshd</p>
+    </div>
+
+    <div class="block note">
+        <p>Zákaz root loginu v SSH klientovi:</p>
+        <p>V /etc/ssh/sshd_config upravit: PermitRootLogin no</p>
+        <p>Zákaz specifických uživatelů:</p>
+        <p>DenyUsers jmeno_uzivatele</p>
+    </div>
+
+    <h2>Zobrazit nastavení firewallu:</h2>
+    <div class="cmd">
+        firewall-cmd --list-all
+    </div>
+
+    <h1>Nastavení DHCP (Kea)</h1>
+    <div class="cmd">
+        <p>su</p>
+        <p>dnf install kea</p>
+    </div>
+    <div class="block file">
+        <p>Konfigurační soubor: /etc/kea/kea-dhcp4.conf</p>
+    </div>
+
+    <div class="cmd">
+        <p>cd /etc/kea</p>
+        <p>mv kea-dhcp4.conf kea-dhcp4.conf.orig</p>
+        <p>wget https://alpha.kts.vspj.cz/~apribyl/kea-dhcp4.conf</p>
+        <p>chown root:kea kea-dhcp4.conf</p>
+        <p>systemctl start kea-dhcp4</p>
+        <p>systemctl enable kea-dhcp4</p>
+        <p>firewall-cmd --zone=public --add-service=dhcp --permanent</p>
+        <p>firewall-cmd --reload</p>
+    </div>
+
+    <h3>Získání nové IP adresy na windows:</h3>
+
+    <div class="cmd">
+        ipconfig /renew
+    </div>
+
+    <h1>Nastavení DNS serveru</h1>
+
+    <div class="cmd">
+        <p>dnf install bind bind-utils</p>
+        <p>mc</p>
+    </div>
+
+    <div class="block file">
+        /etc/named.conf
+    </div>
+
+    <div class="block note">
+        <h3>V souboru upravit:</h3>
+        <p>listen-on port 53 { any; };</p>
+        <p>//listen-on-v6 port 53 { ::1; };</p>
+        <p>allow-query { localhost; 10.0.0.0/8; };</p>
+        <p>recursion yes;</p>
+        <p>allow-recursion { localhost; 10.0.0.0/8; };</p>
+        <h3>Přidat:</h3>
+        <p>zone "myvspj.cz" IN { type master; file "myvspj.cz"; };</p>
+    </div>
+
+    <div class="cmd">
+        <p>cd /var/named</p>
+        <p>wget https://alpha.kts.vspj.cz/~apribyl/myvspj.cz.txt</p>
+        <p>mv myvspj.cz.txt myvspj.cz</p>
+        <p>chown root:named myvspj.cz</p>
+        <p>chmod 640 myvspj.cz</p>
+        <p>systemctl start named</p>
+        <p>systemctl enable named</p>
+        <p>firewall-cmd --add-service=dns --permanent</p>
+        <p>firewall-cmd –-reload</p>
+    </div>
+
+    <h1>Nastavení mail serveru Postfix</h1>
+    <div class="cmd">
+        dnf install postfix
+    </div>
+    <div class="block file">
+        /etc/postfix/main.cf
+    </div>
+    <div class="block note">
+        <h3>Najít a v souboru a pokud je třeba takto upravit:</h3>
+        <p>myhostname = mail.myvspj.cz</p>
+        <p>mydomain = myvspj.cz</p>
+        <p>myorigin = $mydomain</p>
+        <p>inet_interfaces = all</p>
+        <p>inet_protocols = ipv4</p>
+        <p>mydestination = $myhostname, localhost.$mydomain, localhost, $mydomain</p>
+        <p>mynetworks = 127.0.0.0/8, 10.0.0.0/8</p>
+        <p>home_mailbox = Maildir/</p>
+    </div>
+    <div class="block file">
+        <p>Poslední řádek:</p>
+        root: eit
+    </div>
+    <img src="Obrázek9.png" alt="obr9">
+    <div class="cmd">
+        <p>postalias /etc/aliases</p>
+        <p>/usr/sbin/postalias /etc/aliases</p>
+        <p>ls -l /etc/aliases.lmdb</p>
+        <p>systemctl restart postfix</p>
+        <p>systemctl status postfix</p>
+        <p>firewall-cmd --add-service=smtp --permanent</p>
+        <p>firewall-cmd --reload</p>
+        <p>su - eit</p>
+        <p>mkdir -p ~/Maildir/{cur,new,tmp}</p>
+        <p>ls -ld ~/Maildir ~/Maildir/*</p>
+        <p>chown -R eit:eit ~/Maildir</p>
+        <p>chmod -R 700 ~/Maildir</p>
+        <p>dnf install s-nail</p>
+        <p>echo "Tělo testovacího mailu" | mail -s "Test Maildir" eit</p>
+        <p>ls -l ~/Maildir/new</p>
+        <p>echo "Zde je telo 1. mailu." | mail -s "mail pro eit" eit</p>
+        <p>echo "Zde je telo 2. mailu." | mail -s "mail pro root" root</p>
+        <p>ls -l /home/eit/Maildir/new</p>
+    </div>
+
+    <h1>Instalace IMAP</h1>
+    <div class="cmd">
+        <p>dnf install dovecot</p>
+    </div>
+    <div class="block file">/etc/dovecot/dovecot.conf</div>
+    <div class="block note">
+        <div class="h3">V souboru upravit</div>
+        <p>protocols = imap</p>
+        <p>listen = *</p>
+        <p>login_greeting = Welcome! # volitelně neprozrazovat název služby</p>
+        <p>login_trusted_networks = 10.0.0.0/8 127.0.0.0/8</p>
+    </div>
+
+    <div class="cmd">
+        <p>systemctl enable dovecot</p>
+        <p>systemctl start dovecot</p>
+        <p>systemctl status dovecot</p>
+    </div>
+
+    <h1>Instalace FTP</h1>
+    <div class="cmd">
+        <p>dnf install epel-release</p>
+        <p>setsebool -P ftpd_anon_write=1</p>
+        <p>setsebool -P ftpd_full_access=1</p>
+        <p>setsebool -P ftpd_use_passive_mode=1</p>
+    </div>
+    <div class="block file">
+        /etc/sysconfig/proftpd
+    </div>
+    <div class="block note">
+        <h3>Do souboru přidat</h3>
+        <p>PROFTPD_OPTIONS="-DANONYMOUS_FTP"</p>
+    </div>
+
+    <div class="cmd">
+        <p>usermod --shell /bin/bash ftp</p>
+        <p>systemctl enable proftpd</p>
+        <p>systemctl start proftpd</p>
+        <p>systemctl status proftpd</p>
+        <p>firewall-cmd --add-service=ftp --permanent</p>
+        <p>firewall-cmd --reload</p>
+    </div>
+
+    <h1>Instalace Web Serveru</h1>
+    <div class="cmd">
+        <p>dnf install httpd</p>
+        <p>systemctl enable httpd</p>
+        <p>systemctl start httpd</p>
+        <p>systemctl status httpd</p>
+        <p>touch /var/www/html/index.html</p>
+        <p>echo "Moje první stránka" > /var/www/html/index.html</p>
+        <p>dnf install php -y</p>
+        <p>systemctl reload httpd</p>
+        <p>echo "<?php phpinfo(); ?>"" > /var/www/html/index.php</p>
+        <p>mv /var/www/html/index.html /var/www/html/index.html.txt</p>
+        <p>su - eit</p>
+        <p>mkdir -p ~/public_html</p>
+        <p>echo "Uživatelská stránka eit" > ~/public_html/index.html</p>
+        <p>chmod o+x ~eit</p>
+        <p>setsebool -P httpd_enable_homedirs 1</p>
+        <p>systemctl reload httpd</p>
+    </div>
+
+    <div class="block note">
+        <p>Pro otestování uživatelského webu lokálně: http://localhost/~eit/</p>
+        <p>Pro otestování uživatelského webu na klientském počítači: http://myvspj.cz/~eit </p>
+    </div>
+
+    <h2>Přidání subdomén pro další weby: </h2>
+    <div class="block file">
+        <p>/var/named/myvspj.cz</p>
+    </div>
+    <div class="block note">
+        <h3>Dopsat na konec souboru</h3>
+        <p>web1    A  10.0.0.10</p>
+        <p>web2    A  10.0.0.11</p>
+    </div>
+    <div class="block warn">
+        Zvýšit číslo SOA o 1 (Na obrázku před kurzorem)
+    </div>
+    <img src="Obrázek10.png" alt="obr1">
+    <div class="cmd">
+        <p>systemctl restart named</p>
+        <p>cd /etc/httpd/conf.d</p>
+        <p>wget https://alpha.kts.vspj.cz/~apribyl/virtualhosts.conf</p>
+        <p>mkdir -p /var/www/web1</p>
+        <p>echo "Web1 - testovací stránka" > /var/www/web1/index.html</p>
+        <p>mkdir -p /var/www/web2</p>
+        <p>echo "Web2 - testovací stránka" > /var/www/web2/index.html</p>
+        <p>systemctl restart httpd</p>
+        <p>firewall-cmd --add-service=http --permanent</p>
+        <p>firewall-cmd --reload</p>
+    </div>
+</body>
+
+</html>
